@@ -1,4 +1,5 @@
 def label = "build"
+def mvn_version = 'M2'
 podTemplate(label: label, yaml: """
 apiVersion: v1
 kind: Pod
@@ -28,7 +29,11 @@ spec:
           git credentialsId: 'git', url: 'https://dptrealtime@bitbucket.org/dptrealtime/eos-micro-services-admin.git', branch: 'master'
           container('build') {
                 stage('Build a Maven project') {
-                    sh './mvnw clean package'             
+                  //withEnv( ["PATH+MAVEN=${tool mvn_version}/bin"] ) {
+                   //sh "mvn clean package"
+                  //  }
+                  sh './mvnw clean package' 
+                   //sh 'mvn clean package'
                 }
             }
         }
@@ -62,8 +67,8 @@ spec:
           container('build') {
                 stage('Deploy Artifacts') {
                     rtMavenRun (
-                    //tool: "maven", // Tool name from Jenkins configuration
-                    useWrapper: true,
+                    tool: "maven", // Tool name from Jenkins configuration
+                    //useWrapper: true,
                     pom: 'pom.xml',
                     goals: 'clean install',
                     deployerId: "MAVEN_DEPLOYER",
