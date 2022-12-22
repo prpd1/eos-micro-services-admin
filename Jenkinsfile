@@ -64,7 +64,7 @@ spec:
                     rtMavenRun (
                     //tool: "maven", // Tool name from Jenkins configuration
                     useWrapper: true,
-                    pom: 'app/pom.xml',
+                    pom: 'pom.xml',
                     goals: 'clean install',
                     deployerId: "MAVEN_DEPLOYER",
                     resolverId: "MAVEN_RESOLVER"
