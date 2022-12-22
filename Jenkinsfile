@@ -45,15 +45,15 @@ spec:
                 rtMavenDeployer (
                     id: "MAVEN_DEPLOYER",
                     serverId: "jfrog",
-                    releaseRepo: "eos-admin-libs-release-local",
-                    snapshotRepo: "eos-admin-libs-snapshot-local"
+                    releaseRepo: "libs-release-local",
+                    snapshotRepo: "libs-snapshot-local"
                 )
 
                 rtMavenResolver (
                     id: "MAVEN_RESOLVER",
                     serverId: "jfrog",
-                    releaseRepo: "default-maven-virtual",
-                    snapshotRepo: "default-maven-virtual"
+                    releaseRepo: "libs-release-local",
+                    snapshotRepo: "libs-snapshot-local"
                 )            
                 }
             }
@@ -62,7 +62,8 @@ spec:
           container('build') {
                 stage('Deploy Artifacts') {
                     rtMavenRun (
-                    tool: "maven", // Tool name from Jenkins configuration
+                    //tool: "maven", // Tool name from Jenkins configuration
+                    useWrapper: true,
                     pom: 'app/pom.xml',
                     goals: 'clean install',
                     deployerId: "MAVEN_DEPLOYER",
@@ -95,8 +96,8 @@ spec:
           container('build') {
             dir('charts') {
               withCredentials([usernamePassword(credentialsId: 'jfrog', usernameVariable: 'username', passwordVariable: 'password')]) {
-              sh '/usr/local/bin/helm package microservices-admin'
-              sh '/usr/local/bin/helm push-artifactory microservices-admin-1.0.tgz https://edproject.jfrog.io/artifactory/dpt7-helm-local --username $username --password $password'
+              sh '/usr/local/bin/helm package micros-ervices-admin'
+              sh '/usr/local/bin/helm push-artifactory micro-services-admin-1.0.tgz https://edproject.jfrog.io/artifactory/dpt7-helm-local --username $username --password $password'
               }
             }
         }
