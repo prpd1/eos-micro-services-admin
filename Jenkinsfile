@@ -101,7 +101,7 @@ spec:
           container('build') {
             dir('charts') {
               withCredentials([usernamePassword(credentialsId: 'jfrog', usernameVariable: 'username', passwordVariable: 'password')]) {
-              sh '/usr/local/bin/helm package micros-ervices-admin'
+              sh '/usr/local/bin/helm package micro-services-admin'
               sh '/usr/local/bin/helm push-artifactory micro-services-admin-1.0.tgz https://edproject.jfrog.io/artifactory/dpt7-helm-local --username $username --password $password'
               }
             }
