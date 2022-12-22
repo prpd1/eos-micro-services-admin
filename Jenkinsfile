@@ -57,8 +57,8 @@ spec:
                 rtMavenResolver (
                     id: "MAVEN_RESOLVER",
                     serverId: "jfrog",
-                    releaseRepo: "libs-release-local",
-                    snapshotRepo: "libs-snapshot-local"
+                    releaseRepo: "libs-release",
+                    snapshotRepo: "libs-snapshot"
                 )            
                 }
             }
