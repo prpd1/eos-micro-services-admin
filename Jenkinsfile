@@ -37,6 +37,15 @@ spec:
                 }
             }
         }
+        stage ('Sonar Scan'){
+          container('build') {
+                stage('Sonar Scan') {
+                  withSonarQubeEnv('sonar') {
+                  sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=dpt7'
+                }
+                }
+            }
+        }
 
         stage ('Artifactory configuration'){
           container('build') {
