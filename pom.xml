@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.segman.tech</groupId>
 	<artifactId>ether</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1-RELEASE</version>
 	<name>ether</name>
 	<description>Admin Tool Health Check Tool</description>
 	<properties>
