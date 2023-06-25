@@ -1,4 +1,4 @@
-def label = "build"
+def label = "eosagent"
 def mvn_version = 'M2'
 podTemplate(label: label, yaml: """
 apiVersion: v1
@@ -11,7 +11,7 @@ metadata:
 spec:
   containers:
   - name: build
-    image: dpthub/eos-jen-node-build-agent
+    image: dpthub/eos-jenkins-agent-base:latest
     command:
     - cat
     tty: true
@@ -41,10 +41,18 @@ spec:
           container('build') {
                 stage('Sonar Scan') {
                   withSonarQubeEnv('sonar') {
-                  sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=dpt7'
+                  sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=eos_eos'
                 }
                 }
             }
+        }
+
+        stage("Quality Gate"){
+          timeout(time: 1, unit: 'HOURS') {
+              def qg = waitForQualityGate()
+              if (qg.status != 'OK') {
+                  error "Pipeline aborted due to quality gate failure: ${qg.status}"}
+          }
         }
 
         stage ('Artifactory configuration'){
@@ -52,22 +60,22 @@ spec:
                 stage('Artifactory configuration') {
                     rtServer (
                     id: "jfrog",
-                    url: "https://edproject.jfrog.io/artifactory",
+                    url: "https://eosartifacts.jfrog.io/artifactory",
                     credentialsId: "jfrog"
                 )
 
                 rtMavenDeployer (
                     id: "MAVEN_DEPLOYER",
                     serverId: "jfrog",
-                    releaseRepo: "libs-release-local",
-                    snapshotRepo: "libs-snapshot-local"
+                    releaseRepo: "eos-libs-release-local",
+                    snapshotRepo: "eos-libs-release-local"
                 )
 
                 rtMavenResolver (
                     id: "MAVEN_RESOLVER",
                     serverId: "jfrog",
-                    releaseRepo: "libs-release",
-                    snapshotRepo: "libs-snapshot"
+                    releaseRepo: "eos-libs-release",
+                    snapshotRepo: "eos-libs-release"
                 )            
                 }
             }
@@ -111,7 +119,7 @@ spec:
             dir('charts') {
               withCredentials([usernamePassword(credentialsId: 'jfrog', usernameVariable: 'username', passwordVariable: 'password')]) {
               sh '/usr/local/bin/helm package micro-services-admin'
-              sh '/usr/local/bin/helm push-artifactory micro-services-admin-1.0.tgz https://edproject.jfrog.io/artifactory/dpt7-helm-local --username $username --password $password'
+              sh '/usr/local/bin/helm push-artifactory micro-services-admin-1.0.tgz https://edproject.jfrog.io/artifactory/eos-helm-local --username $username --password $password'
               }
             }
         }
