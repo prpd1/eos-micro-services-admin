@@ -5,7 +5,7 @@ metadata:
   labels:
     app: eos-micro-services-admin
 spec:
-  replicas: 1
+  replicas: {{ .Values.deployment.replicas }}
   selector:
     matchLabels:
       app: eos-micro-services-admin
