@@ -53,7 +53,7 @@ spec:
                 stage('Artifactory configuration') {
                     rtServer (
                     id: "jfrog",
-                    url: "https://eosartifacts.jfrog.io/artifactory",
+                    url: "https://eosartifact.jfrog.io/artifactory",
                     credentialsId: "jfrog"
                 )
 
@@ -112,7 +112,7 @@ spec:
             dir('charts') {
               withCredentials([usernamePassword(credentialsId: 'jfrog', usernameVariable: 'username', passwordVariable: 'password')]) {
               sh '/usr/local/bin/helm package micro-services-admin'
-              sh '/usr/local/bin/helm push-artifactory micro-services-admin-1.0.tgz https://eosartifacts.jfrog.io/artifactory/eos-helm-local --username $username --password $password'
+              sh '/usr/local/bin/helm push-artifactory micro-services-admin-1.0.tgz https://eosartifact.jfrog.io/artifactory/eos-helm-local --username $username --password $password'
               }
             }
         }
