@@ -12,6 +12,8 @@ spec:
   containers:
   - name: build
     image: qwerty703/eos-jenkins-agent-base:latest
+    securityContext:
+      privileged: true
     command:
     - cat
     tty: true
