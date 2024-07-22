@@ -99,6 +99,8 @@ spec:
        stage ('Docker Build'){
           container('build') {
                 stage('Build Image') {
+                    // sleep 10 mins for debugging
+                    sleep(time:600, unit:"SECONDS")
                     docker.withRegistry( 'https://registry.hub.docker.com', 'docker' ) {
                     def customImage = docker.build("qwerty703/eos-micro-services-admin:latest")
                     customImage.push()             
