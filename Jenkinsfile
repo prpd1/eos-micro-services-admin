@@ -27,7 +27,7 @@ spec:
     node (label) {
         stage ('Checkout SCM'){
           git credentialsId: 'git', url: 'https://github.com/prpd1/eos-micro-services-admin.git', branch: 'main'
-          container('build') {
+          container('jnlp') {
                 stage('Build a Maven project') {
                   //withEnv( ["PATH+MAVEN=${tool mvn_version}/bin"] ) {
                    //sh "mvn clean package"
@@ -38,7 +38,7 @@ spec:
             }
         }
         stage ('Sonar Scan'){
-          container('build') {
+          container('jnlp') {
                 stage('Sonar Scan') {
                   withSonarQubeEnv('sonar') {
                   sh './mvnw verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=eos-sonar_eos'
@@ -49,7 +49,7 @@ spec:
 
 
         stage ('Artifactory configuration'){
-          container('build') {
+          container('jnlp') {
                 stage('Artifactory configuration') {
                     rtServer (
                     id: "jfrog",
@@ -74,7 +74,7 @@ spec:
             }
         }
         stage ('Deploy Artifacts'){
-          container('build') {
+          container('jnlp') {
                 stage('Deploy Artifacts') {
                     rtMavenRun (
                     tool: "java", // Tool name from Jenkins configuration
@@ -88,7 +88,7 @@ spec:
             }
         }
         stage ('Publish build info') {
-            container('build') {
+            container('jnlp') {
                 stage('Publish build info') {
                 rtPublishBuildInfo (
                     serverId: "jfrog"
@@ -97,7 +97,7 @@ spec:
            }
        }
        stage ('Docker Build'){
-          container('build') {
+          container('jnlp') {
                 stage('Build Image') {
                     docker.withRegistry( 'https://registry.hub.docker.com', 'docker' ) {
                     def customImage = docker.build("qwerty703/eos-micro-services-admin:latest")
@@ -108,7 +108,7 @@ spec:
         }
 
         stage ('Helm Chart') {
-          container('build') {
+          container('jnlp') {
             dir('charts') {
               withCredentials([usernamePassword(credentialsId: 'jfrog', usernameVariable: 'username', passwordVariable: 'password')]) {
               sh '/usr/local/bin/helm package micro-services-admin'
