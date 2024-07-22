@@ -10,7 +10,7 @@ metadata:
     sidecar.istio.io/inject: "false"
 spec:
   containers:
-  - name: build
+  - name: jnlp
     image: qwerty703/eos-jenkins-agent-base:latest
     command:
     - cat
