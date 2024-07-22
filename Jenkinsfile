@@ -73,32 +73,32 @@ spec:
                 }
             }
         }
-        stage ('Deploy Artifacts'){
-          container('build') {
-                stage('Deploy Artifacts') {
-                    environment{
-                      JAVA_HOME = '/usr/lib/jvm/java-17-openjdk'
-                    }
-                    rtMavenRun (
-                    tool: "java2", // Tool name from Jenkins configuration
-                    useWrapper: true,
-                    pom: 'pom.xml',
-                    goals: 'clean install',
-                    deployerId: "MAVEN_DEPLOYER",
-                    resolverId: "MAVEN_RESOLVER"
-                  )
-                }
-            }
-        }
-        stage ('Publish build info') {
-            container('build') {
-                stage('Publish build info') {
-                rtPublishBuildInfo (
-                    serverId: "jfrog"
-                  )
-               }
-           }
-       }
+      //   stage ('Deploy Artifacts'){
+      //     container('build') {
+      //           stage('Deploy Artifacts') {
+      //               environment{
+      //                 JAVA_HOME = '/usr/lib/jvm/java-17-openjdk'
+      //               }
+      //               rtMavenRun (
+      //               tool: "java2", // Tool name from Jenkins configuration
+      //               useWrapper: true,
+      //               pom: 'pom.xml',
+      //               goals: 'clean install',
+      //               deployerId: "MAVEN_DEPLOYER",
+      //               resolverId: "MAVEN_RESOLVER"
+      //             )
+      //           }
+      //       }
+      //   }
+      //   stage ('Publish build info') {
+      //       container('build') {
+      //           stage('Publish build info') {
+      //           rtPublishBuildInfo (
+      //               serverId: "jfrog"
+      //             )
+      //          }
+      //      }
+      //  }
        stage ('Docker Build'){
           container('build') {
                 stage('Build Image') {
