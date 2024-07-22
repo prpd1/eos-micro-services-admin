@@ -76,6 +76,9 @@ spec:
         stage ('Deploy Artifacts'){
           container('build') {
                 stage('Deploy Artifacts') {
+                    environment{
+                      JAVA_HOME = '/usr/lib/jvm/java-17-openjdk'
+                    }
                     rtMavenRun (
                     tool: "java2", // Tool name from Jenkins configuration
                     useWrapper: true,
