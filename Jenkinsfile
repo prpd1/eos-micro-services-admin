@@ -1,22 +1,37 @@
 def label = "eosagent"
 def mvn_version = 'M2'
 podTemplate(label: label, yaml: """
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    app: build
-  annotations:
-    sidecar.istio.io/inject: "false"
-spec:
-  containers:
-  - name: build
-    image: qwerty703/eos-jenkins-agent-base:latest
-    securityContext:
-      privileged: true
-    command:
-    - cat
-    tty: true
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              labels:
+                app: build
+              annotations:
+                sidecar.istio.io/inject: "false"
+            spec:
+                containers:
+                - name: build
+                  image: qwerty703/eos-jenkins-agent-base:latest
+                  command:
+                  - cat
+                  tty: true
+                - name: kaniko
+                  image: gcr.io/kaniko-project/executor:debug
+                  command:
+                  - sleep
+                  args:
+                  - 9999999
+                  volumeMounts:
+                  - name: kaniko-secret
+                    mountPath: /kaniko/.docker
+                restartPolicy: Never
+                volumes:
+                - name: kaniko-secret
+                  secret:
+                    secretName: dockercred
+                    items:
+                    - key: .dockerconfigjson
+                      path: config.json
 """
 ) {
     node (label) {
@@ -68,39 +83,35 @@ spec:
                 }
             }
         }
-      //   stage ('Deploy Artifacts'){
-      //     container('build') {
-      //           stage('Deploy Artifacts') {
-      //               environment{
-      //                 JAVA_HOME = '/usr/lib/jvm/java-17-openjdk'
-      //               }
-      //               rtMavenRun (
-      //               tool: "java2", // Tool name from Jenkins configuration
-      //               useWrapper: true,
-      //               pom: 'pom.xml',
-      //               goals: 'clean install',
-      //               deployerId: "MAVEN_DEPLOYER",
-      //               resolverId: "MAVEN_RESOLVER"
-      //             )
-      //           }
-      //       }
-      //   }
-      //   stage ('Publish build info') {
-      //       container('build') {
-      //           stage('Publish build info') {
-      //           rtPublishBuildInfo (
-      //               serverId: "jfrog"
-      //             )
-      //          }
-      //      }
-      //  }
-       stage ('Docker Build'){
+        stage ('Deploy Artifacts'){
           container('build') {
+                stage('Deploy Artifacts') {
+                    rtMavenRun (
+                    tool: "java2", // Tool name from Jenkins configuration
+                    useWrapper: true,
+                    pom: 'pom.xml',
+                    goals: 'clean install',
+                    deployerId: "MAVEN_DEPLOYER",
+                    resolverId: "MAVEN_RESOLVER"
+                  )
+                }
+            }
+        }
+        stage ('Publish build info') {
+            container('build') {
+                stage('Publish build info') {
+                rtPublishBuildInfo (
+                    serverId: "jfrog"
+                  )
+               }
+           }
+       }
+       stage ('Docker Build'){
+          container('kaniko') {
                 stage('Build Image') {
-                    docker.withRegistry( 'https://registry.hub.docker.com', 'docker' ) {
-                    def customImage = docker.build("qwerty703/eos-micro-services-admin:latest")
-                    customImage.push()             
-                    }
+                    sh '''
+                      /kaniko/executor --context `pwd` --destination qwerty703/eos-micro-services-admin:latest
+                    '''
                 }
             }
         }
